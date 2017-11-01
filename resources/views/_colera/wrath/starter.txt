@@ -1,0 +1,88 @@
+Route
+
+Route
+Route::get('/wrath', ['uses' => 'WrathController@wrath', 'as' => 'fury.migration']);
+
+
+
+---
+app/Providers/AuthServiceProvider.php
+
+
+
+namespace App\Providers;
+use App\User;
+use App\Post;
+use App\Permission;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
+
+
+
+
+    public function boot()
+    {
+
+        $this->registerPolicies();
+
+        Gate::define('check_user', function(User $user, Post $post){
+            return $user->id == $post->user_id;
+        });
+
+        //$permissions = Permission::with('roles')->get(); 
+        $permissions = \App\ACL\Permission::with('roles')->get(); 
+
+
+        foreach ($permissions as $permission) { // creates (looping) dinamicly all the Gates with all the permissions name instead creating a new Gate method to each new permission created
+            Gate::define($permission->name, function(User $user) use($permission){
+                return $user->hasPermission($permission); // model User
+            });
+        }
+
+        //isAdm?
+        Gate::before(function(User $user, $ability){
+            if($user->hasAnyRoles('adm')){
+                return true;
+            }
+            
+        });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROUTES
+
+// -----------------------------------------------wrath-----------------------------------------------//
+Route::get('/wrath', function () {
+return view('_colera.wrath.index');
+});
+Route::get('/wrath/migration', ['uses' => 'FuryController@migration', 'as' => 'wrath.migration']);
+Route::get('/wrath/generate/{id}', ['uses' => 'FuryController@generate', 'as' => 'wrath.generate']);
+Route::post('/wrath/create', ['uses' => 'FuryController@create', 'as' => 'wrath.create']);
+
+Route::get('/wrath/dashboard', ['uses' => 'WrathController@dashboard', 'as' => 'wrath.dashboard']);
+
+// -----------------------------------------------//wrath---------------------------------------------//
+
+
+
+
+html
+
+
+                        @can('see_sitFe', $user)
+                                FoiiiiiiiiiiiiiiiiiiiiiASDFASDF
+                        @endcan

@@ -1,0 +1,82 @@
+﻿ps: you need an active database with the native migrations table and both bootstrap and jquery folders on Public Folder
+
+1 - First route
+
+
+// -----------------------------------------------fury-----------------------------------------------//
+Route::get('/fury', function () {
+    return view('fury.index');
+});
+Route::get('/fury/migration', ['uses' => 'FuryController@migration', 'as' => 'fury.migration']);
+Route::get('/fury/generate/{id}', ['uses' => 'FuryController@generate', 'as' => 'fury.generate']);
+Route::post('/fury/create', ['uses' => 'FuryController@create', 'as' => 'fury.create']);
+// -----------------------------------------------//fury---------------------------------------------//
+
+
+
+2 - now you can access /fury
+
+3 - the FuryController and Fury model is created
+
+4 - new routes are created, copy it
+
+-------------------------------------
+Validação de dados / data validation
+
+validação de dados
+php artisan make:request ClienteRequest
+
+1 poe true no authorize()
+
+2 rules:
+    public function rules()
+    {
+        return [
+            'carreira_name'=>'required|max:20',
+            'carreira_note' => 'max:255'
+        ];
+    }
+3 criar metodo messages()
+
+    public function messages()
+    {
+        return[
+        'nome.requierd'=>'Preencha um nome',
+        'nome.max' => 'Nome deve ter até 255 caracteres',
+        'email.requierd' => 'Preencha um email',
+        'email.email' => 'Preencha um email válido',
+        'email.max' => 'Email deve ter até 255 caracteres',
+        'endereco.required'=>'Preencha um endereço'
+        ];
+    }
+
+4 agora deve substituir o Request $request do controller no metodo salvar
+
+5 alterar a linha de parametro para \App\Http\Requests\ClienteRequest $request
+
+public function salvar(\App\Http\Requests\ClienteRequest $request)
+    {
+    	\App\Cliente::create($request->all());
+    	\Session::flash('flash_message',[
+    			'msg'=>"Cliente adicionado com Sucesso!",
+    			'class'=>"alert-success"
+    		]);
+    	return redirect()->route('cliente.adicionar');
+    }
+
+6 no view adicionar alterar as classes de todos divs dos inputs 
+
+<div class="form-group {{$errors->has('nome')?'has-error':''}}">
+<div class="form-group {{$errors->has('email')?'has-error':''}}">
+<div class="form-group {{$errors->has('endereco')?'has-error':''}}">
+
+7 criar o if dentro das div de cada input 
+
+<div class="form-group {{$errors->has('nome')?'has-error':''}}">
+                    <label for="name">Nome</label>
+                    <input type="text" name="nome" class="form-control" placeholder="Insira o nome">
+                    	@if($errors->has('nome'))
+                    	<span class="help-block"><strong>{{$errors->first('nome')}}</strong></span>
+                    	@endif
+</div>
+                    

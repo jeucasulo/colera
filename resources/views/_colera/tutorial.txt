@@ -1,0 +1,11 @@
+paste the routes below in your routes file
+
+//   -   -   -   -   -   -   -    colera    -   -   -   -   -   -   -   //
+Route::get('/colera', function () {
+    return view('_colera.index');
+});
+Route::get('/fury-install', ['uses' => 'ColeraController@furyInstall', 'as' => 'fury-install']);
+Route::get('/fury-uninstall', ['uses' => 'ColeraController@furyUninstall', 'as' => 'fury-uninstall']);
+Route::get('/wrath-install', ['uses' => 'ColeraController@wrathInstall', 'as' => 'wrath-install']);
+Route::get('/wrath-uninstall', ['uses' => 'ColeraController@wrathUninstall', 'as' => 'wrath-uninstall']);
+//   -   -   -   -   -   -   -    colera    -   -   -   -   -   -   -   //
