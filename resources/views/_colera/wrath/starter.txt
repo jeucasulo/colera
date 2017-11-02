@@ -31,23 +31,29 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
             return $user->id == $post->user_id;
         });
 
-        //$permissions = Permission::with('roles')->get(); 
         $permissions = \App\ACL\Permission::with('roles')->get(); 
 
-
         foreach ($permissions as $permission) { // creates (looping) dinamicly all the Gates with all the permissions name instead creating a new Gate method to each new permission created
-            Gate::define($permission->name, function(User $user) use($permission){
+            // Gate::define($permission->name, function(\App\ACL\User $user) use($permission){
+            Gate::define($permission->name, function() use($permission){
+               $user = \Auth::user(); //gets the user manually sinces the import ABOVE was broken 
+               $user = \App\ACL\User::find($user->id);
                 return $user->hasPermission($permission); // model User
             });
         }
 
-        //isAdm?
-        Gate::before(function(User $user, $ability){
+        // isAdm?
+        // Gate::before(function(User $user, $ability){
+        
+        Gate::before(function($ability){
+            $user = \Auth::user(); //gets the user manually sinces the import ABOVE was broken
+            $user = \App\ACL\User::find($user->id);
             if($user->hasAnyRoles('adm')){
                 return true;
             }
             
         });
+
 
     }
 
@@ -78,6 +84,25 @@ Route::get('/wrath/dashboard', ['uses' => 'WrathController@dashboard', 'as' => '
 // -----------------------------------------------//wrath---------------------------------------------//
 
 
+
+---------------------------------------
+
+config/auth.php
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\User::class,
+        ],
+
+        'users' => [
+            'driver' => 'database',
+            'model' => App\ACL\User::class,
+            'table' => 'users',
+        ],
+    ],
+
+---------------------------------------
 
 
 html
