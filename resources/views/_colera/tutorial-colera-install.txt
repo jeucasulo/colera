@@ -1,3 +1,15 @@
+php artisan make:auth
+php atisan migrate
+php artisan key:generate
+
+paste "_colera" folder to the "views" folder
+
+copy and paste colera "routes" 
+
+access yoursiteURL/colera
+----------------------------------------------------------------
+
+
 paste the routes below in your routes file
 
 //   -   -   -   -   -   -   -    colera    -   -   -   -   -   -   -   //

@@ -1,11 +1,25 @@
-Route
+Routes
 
-Route
-Route::get('/wrath', ['uses' => 'WrathController@wrath', 'as' => 'fury.migration']);
+Route::get('/wrath', function () { return view('_wrath.index'); }); 
+Route::get('acl/dashboard/', ['uses' => 'WrathController@dashboard', 'as' => 'acl']);
+Route::get('/acl/user/{id}', ['uses' => 'WrathController@user', 'as' => 'acl.user']);
+Route::post('/acl/user-role-attach/', ['uses' => 'WrathController@userRoleAttach', 'as' => 'acl.user-role-attach']);
+Route::post('/acl/user-role-dettach/', ['uses' => 'WrathController@userRoleDettach', 'as' => 'acl.user-role-dettach']);
+Route::post('/acl/role-permission-attach/', ['uses' => 'WrathController@rolePermissionAttach', 'as' => 'acl.role-permission-attach']);
+Route::post('/acl/role-permission-dettach/', ['uses' => 'WrathController@rolePermissionDettach', 'as' => 'acl.role-permission-dettach']);
+Route::get('/acl/role/{id}', ['uses' => 'WrathController@role', 'as' => 'acl.role']);
+Route::post('/acl/role-role-attach/', ['uses' => 'WrathController@rolePermissionAttach', 'as' => 'acl.role-role-attach']);
+Route::post('/acl/role-role-dettach/', ['uses' => 'WrathController@rolePermissionDettach', 'as' => 'acl.role-role-dettach']);
 
+------------------
+access yourSiteURL/wrath
+------------------
+php artisan migrate (run the Role and Permission migrations)
+------------------
+http://127.0.0.1:8000/acl
+------------------
+edit
 
-
----
 app/Providers/AuthServiceProvider.php
 
 
@@ -56,32 +70,6 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-ROUTES
-
-// -----------------------------------------------wrath-----------------------------------------------//
-Route::get('/wrath', function () {
-return view('_colera.wrath.index');
-});
-Route::get('/wrath/migration', ['uses' => 'FuryController@migration', 'as' => 'wrath.migration']);
-Route::get('/wrath/generate/{id}', ['uses' => 'FuryController@generate', 'as' => 'wrath.generate']);
-Route::post('/wrath/create', ['uses' => 'FuryController@create', 'as' => 'wrath.create']);
-
-Route::get('/wrath/dashboard', ['uses' => 'WrathController@dashboard', 'as' => 'wrath.dashboard']);
-
-// -----------------------------------------------//wrath---------------------------------------------//
 
 
 
