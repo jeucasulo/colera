@@ -1,6 +1,8 @@
 php artisan make:auth
 php atisan migrate
 php artisan key:generate
+php artisan migrate:refresh
+php artisan migrate:status
 
 paste "_colera" folder to the "views" folder
 

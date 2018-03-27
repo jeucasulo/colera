@@ -1,0 +1,101 @@
+Routes
+
+Route::get('/wrath', function () { return view('_wrath.index'); }); 
+Route::get('acl/dashboard/', ['uses' => 'WrathController@dashboard', 'as' => 'acl']);
+Route::get('/acl/user/{id}', ['uses' => 'WrathController@user', 'as' => 'acl.user']);
+Route::post('/acl/user-role-attach/', ['uses' => 'WrathController@userRoleAttach', 'as' => 'acl.user-role-attach']);
+Route::post('/acl/user-role-dettach/', ['uses' => 'WrathController@userRoleDettach', 'as' => 'acl.user-role-dettach']);
+Route::post('/acl/role-permission-attach/', ['uses' => 'WrathController@rolePermissionAttach', 'as' => 'acl.role-permission-attach']);
+Route::post('/acl/role-permission-dettach/', ['uses' => 'WrathController@rolePermissionDettach', 'as' => 'acl.role-permission-dettach']);
+Route::get('/acl/role/{id}', ['uses' => 'WrathController@role', 'as' => 'acl.role']);
+Route::post('/acl/role-role-attach/', ['uses' => 'WrathController@rolePermissionAttach', 'as' => 'acl.role-role-attach']);
+Route::post('/acl/role-role-dettach/', ['uses' => 'WrathController@rolePermissionDettach', 'as' => 'acl.role-role-dettach']);
+
+------------------
+access yourSiteURL/wrath
+------------------
+php artisan migrate (run the Role and Permission migrations)
+------------------
+http://127.0.0.1:8000/acl
+------------------
+edit
+
+app/Providers/AuthServiceProvider.php
+
+
+
+namespace App\Providers;
+use App\User;
+use App\Post;
+use App\Permission;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
+
+
+
+
+    public function boot()
+    {
+
+        $this->registerPolicies();
+
+        Gate::define('check_user', function(User $user, Post $post){
+            return $user->id == $post->user_id;
+        });
+
+        $permissions = \App\ACL\Permission::with('roles')->get(); 
+
+        foreach ($permissions as $permission) { // creates (looping) dinamicly all the Gates with all the permissions name instead creating a new Gate method to each new permission created
+            // Gate::define($permission->name, function(\App\ACL\User $user) use($permission){
+            Gate::define($permission->name, function() use($permission){
+               $user = \Auth::user(); //gets the user manually sinces the import ABOVE was broken 
+               $user = \App\ACL\User::find($user->id);
+                return $user->hasPermission($permission); // model User
+            });
+        }
+
+        // isAdm?
+        // Gate::before(function(User $user, $ability){
+        
+        Gate::before(function($ability){
+            $user = \Auth::user(); //gets the user manually sinces the import ABOVE was broken
+            $user = \App\ACL\User::find($user->id);
+            if($user->hasAnyRoles('adm')){
+                return true;
+            }
+            
+        });
+
+
+    }
+
+
+
+---------------------------------------
+
+config/auth.php
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\User::class,
+        ],
+
+        'users' => [
+            'driver' => 'database',
+            'model' => App\ACL\User::class,
+            'table' => 'users',
+        ],
+    ],
+
+---------------------------------------
+
+
+html
+
+
+                        @can('see_sitFe', $user)
+                                FoiiiiiiiiiiiiiiiiiiiiiASDFASDF
+                        @endcan
